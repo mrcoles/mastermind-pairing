@@ -23,10 +23,13 @@ COLORS = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE]
 
 LETTER_TO_COLOR = {color[0]:color for color in COLORS}
 
+NUM_GUESSES = 10
+
+
 class Game(object):
     def __init__(self, code=None):
         self.code = self.make_code() if code is None else code
-        self.guesses_remaining = 10
+        self.guesses_remaining = NUM_GUESSES
 
     def make_code(self):
         # TODO - fill out
@@ -68,27 +71,56 @@ class Game(object):
     def solicit_guess(self):
         clean_guess = None
         while clean_guess == None:
-            guess = input("Next guess (available colors: R, O, Y, G, B, P) - format RROY:/n")
+            index = NUM_GUESSES - self.guesses_remaining + 1
+            msg = (f'{index}. Next guess '
+                   f'(available colors: R, O, Y, G, B, P - format RROY):\n\n> ')
+            guess = input(msg)
             clean_guess = self.clean_guess(guess)
             if clean_guess == None:
-                print("Invalid input, please try again")
+                print('\nInvalid input, please try again')
 
-        exact_matches, colormatches = self.evaluate_guess(clean_guess)
+        exact_matches, color_matches = self.evaluate_guess(clean_guess)
         if exact_matches == len(self.code):
-            print('Congratulations! You guessed right.')
+            print('\nCongratulations! You guessed right!!')
             return True
 
-        print(f'{exact_matches} exact matches')
-        print(f'{color_matches} color matches in the wrong position')
+        self.guesses_remaining -= 1
 
-        self.remaining_guesses -= 1
-        return self.remaining_guesses <= 0
+        msg = (
+            # f'>\n'
+            f'> '
+            f'{exact_matches} exact match{_ess(exact_matches, "es")}. '
+            f'{color_matches} wrong position match{_ess(color_matches, "es")}. '
+            f'{self.guesses_remaining} '
+            f'guess{_ess(self.guesses_remaining, "es")} remaining.'
+            f'\n'
+        )
+        print(msg)
+
+        return self.guesses_remaining < 0
+
+    def play(self):
+        while not self.solicit_guess():
+            pass
+
+def _ess(val, plural_suffix, single_suffix=''):
+    return single_suffix if val == 1 else plural_suffix
 
 
-    def play_turn(self):
+##
 
-
-if __name__ == '__main__':
+def test():
     g1 = Game([RED, RED, YELLOW, YELLOW])
     print(g1.evaluate_guess([RED, RED, YELLOW, YELLOW]) == (4,0))
     print(g1.evaluate_guess([YELLOW, YELLOW, RED, RED]) == (0,4))
+
+def main():
+    game = Game()
+    game.play()
+
+if __name__ == '__main__':
+    import sys
+    if '-t' in sys.argv or '--test' in sys.argv:
+        test()
+    else:
+        main()
