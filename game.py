@@ -21,9 +21,11 @@ PURPLE = 'purple'
 
 COLORS = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE]
 
+LETTER_TO_COLOR = {color[0]:color for color in COLORS}
+
 class Game(object):
-    def __init__(self):
-        self.code = self.make_code()
+    def __init__(self, code=None):
+        self.code = self.make_code() if code is None else code
         self.guesses_remaining = 10
 
     def make_code(self):
@@ -58,3 +60,35 @@ class Game(object):
                 color_matches += 1
 
         return exact_matches, color_matches
+
+    def clean_guess(self, guess):
+        output = [LETTER_TO_COLOR[letter] for letter in guess.lower() if letter in LETTER_TO_COLOR]
+        return output if len(output) == len(self.code) else None
+
+    def solicit_guess(self):
+        clean_guess = None
+        while clean_guess == None:
+            guess = input("Next guess (available colors: R, O, Y, G, B, P) - format RROY:/n")
+            clean_guess = self.clean_guess(guess)
+            if clean_guess == None:
+                print("Invalid input, please try again")
+
+        exact_matches, colormatches = self.evaluate_guess(clean_guess)
+        if exact_matches == len(self.code):
+            print('Congratulations! You guessed right.')
+            return True
+
+        print(f'{exact_matches} exact matches')
+        print(f'{color_matches} color matches in the wrong position')
+
+        self.remaining_guesses -= 1
+        return self.remaining_guesses <= 0
+
+
+    def play_turn(self):
+
+
+if __name__ == '__main__':
+    g1 = Game([RED, RED, YELLOW, YELLOW])
+    print(g1.evaluate_guess([RED, RED, YELLOW, YELLOW]) == (4,0))
+    print(g1.evaluate_guess([YELLOW, YELLOW, RED, RED]) == (0,4))
