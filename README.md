@@ -3,4 +3,4 @@
 Mastermind Game Pairing Exercise
 ================================
 
-Go!
+Prep run for Meet&Code pair programming workshop.
