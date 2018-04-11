@@ -12,6 +12,8 @@
 # *   white pegs for # correct color and wrong position
 #
 
+import random
+
 RED = 'red'
 ORANGE = 'orange'
 YELLOW = 'yellow'
@@ -23,6 +25,7 @@ COLORS = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE]
 
 LETTER_TO_COLOR = {color[0]:color for color in COLORS}
 
+CODE_LEN = 4
 NUM_GUESSES = 10
 
 
@@ -32,8 +35,7 @@ class Game(object):
         self.guesses_remaining = NUM_GUESSES
 
     def make_code(self):
-        # TODO - fill out
-        return [RED, ORANGE, YELLOW, GREEN]
+        return [random.choice(COLORS) for _ in range(CODE_LEN)]
 
     def evaluate_guess(self, guess):
         """
